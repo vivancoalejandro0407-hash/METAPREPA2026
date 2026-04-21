@@ -10,9 +10,10 @@ function fmt(s) {
   return String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0')
 }
 
-export default function SimuladorPage() {
-  const { query } = useRouter()
-  const school = query.id ? getSchool(query.id) : null
+export default function SimuladorPage({ id }) {
+  const router = useRouter()
+  const resolvedId = id || router.query.id
+  const school = resolvedId ? getSchool(resolvedId) : null
   const questions = school ? getQuestions(school.exam) : []
 
   const [phase, setPhase]     = useState('intro') // intro | exam | result
@@ -64,7 +65,7 @@ export default function SimuladorPage() {
     <>
       <Head><title>Simulacro – MetaPrepa</title></Head>
       <div className="min-h-screen bg-slate-50">
-        <Header backHref={'/escuela/' + query.id} />
+        <Header backHref={'/escuela/' + resolvedId} />
         <main className="max-w-lg mx-auto px-4 py-8">
           <div className="text-center mb-8">
             <p className="text-6xl mb-4">🧪</p>
@@ -97,7 +98,7 @@ export default function SimuladorPage() {
     <>
       <Head><title>Resultado – MetaPrepa</title></Head>
       <div className="min-h-screen bg-slate-50">
-        <Header backHref={'/escuela/' + query.id} />
+        <Header backHref={'/escuela/' + resolvedId} />
         <main className="max-w-lg mx-auto px-4 py-8">
           <div className="text-center mb-5 anim-bounce">
             <p className="text-6xl mb-3">{passed ? '🏆' : '💪'}</p>
@@ -133,7 +134,7 @@ export default function SimuladorPage() {
 
           <div className="flex gap-3">
             <button onClick={startExam} className="flex-1 bg-slate-100 text-slate-700 font-bold py-3.5 rounded-2xl text-sm press">🔄 Repetir</button>
-            <Link href={'/escuela/' + query.id + '/temas'} className="flex-1">
+            <Link href={'/escuela/' + resolvedId + '/temas'} className="flex-1">
               <button className="w-full py-3.5 rounded-2xl text-white font-bold text-sm press" style={{ background: 'linear-gradient(135deg,#22c55e,#15803d)' }}>📚 Estudiar temas</button>
             </Link>
           </div>

@@ -99,10 +99,12 @@ function PracticeSection({ practice }) {
 
 const TABS = ['📖 Explicación', '✏️ Práctica', '👨‍🏫 Tutor', '🎥 Videos']
 
-export default function TemaPage() {
-  const { query } = useRouter()
-  const school = query.id ? getSchool(query.id) : null
-  const topic  = (school && query.topicId) ? getTopic(school.exam, query.topicId) : null
+export default function TemaPage({ id, topicId }) {
+  const router = useRouter()
+  const resolvedId = id || router.query.id
+  const resolvedTopicId = topicId || router.query.topicId
+  const school = resolvedId ? getSchool(resolvedId) : null
+  const topic  = (school && resolvedTopicId) ? getTopic(school.exam, resolvedTopicId) : null
 
   const [tab, setTab]       = useState(0)
   const [msgs, setMsgs]     = useState([])
@@ -134,7 +136,7 @@ export default function TemaPage() {
     <>
       <Head><title>{topic.title} – MetaPrepa</title></Head>
       <div className="min-h-screen bg-slate-50 flex flex-col">
-        <Header backHref={'/escuela/' + query.id + '/temas'} />
+        <Header backHref={'/escuela/' + resolvedId + '/temas'} />
         <div className="max-w-lg mx-auto w-full px-4 pt-4 pb-2">
           <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4 flex items-center gap-3 mb-4">
             <div className="w-12 h-12 bg-slate-50 rounded-2xl flex items-center justify-center text-2xl flex-shrink-0">{topic.emoji}</div>

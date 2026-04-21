@@ -5,9 +5,10 @@ import Header from '../../../components/Header'
 import { getSchool } from '../../../data/schools'
 import { getTopics } from '../../../data/topics'
 
-export default function TemarioPage() {
-  const { query } = useRouter()
-  const school = query.id ? getSchool(query.id) : null
+export default function TemarioPage({ id }) {
+  const router = useRouter()
+  const resolvedId = id || router.query.id
+  const school = resolvedId ? getSchool(resolvedId) : null
   const topics = school ? getTopics(school.exam) : []
 
   if (!school) return <div className="min-h-screen flex items-center justify-center"><p className="text-slate-400">Cargando...</p></div>
@@ -22,7 +23,7 @@ export default function TemarioPage() {
     <>
       <Head><title>Temario – {school.name}</title></Head>
       <div className="min-h-screen bg-slate-50">
-        <Header backHref={'/escuela/' + query.id} />
+        <Header backHref={'/escuela/' + resolvedId} />
         <main className="max-w-lg mx-auto px-4 pb-10">
           <div className="pt-6 mb-4">
             <h1 className="text-xl font-black text-slate-900 mb-1">Temario oficial</h1>
@@ -44,7 +45,7 @@ export default function TemarioPage() {
               </div>
               <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
                 {list.map((t, i) => (
-                  <Link key={t.id} href={'/escuela/' + query.id + '/tema/' + t.id}>
+                  <Link key={t.id} href={'/escuela/' + resolvedId + '/tema/' + t.id}>
                     <div className={`flex items-start gap-3 p-4 cursor-pointer hover:bg-slate-50 transition-colors ${i < list.length - 1 ? 'border-b border-slate-50' : ''}`}>
                       <div className="w-9 h-9 bg-slate-50 rounded-xl flex items-center justify-center text-lg flex-shrink-0">{t.emoji}</div>
                       <div className="flex-1">

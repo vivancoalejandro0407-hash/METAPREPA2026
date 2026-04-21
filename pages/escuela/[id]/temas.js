@@ -17,9 +17,10 @@ const COLORS = {
 }
 const MOCK_PROGRESS = { algebra: 60, porcentajes: 80, lectura: 45, razonamiento: 20, 'algebra-cecyte': 30, estadistica: 10 }
 
-export default function TemasPage() {
-  const { query } = useRouter()
-  const school = query.id ? getSchool(query.id) : null
+export default function TemasPage({ id }) {
+  const router = useRouter()
+  const resolvedId = id || router.query.id
+  const school = resolvedId ? getSchool(resolvedId) : null
   const topics = school ? getTopics(school.exam) : []
 
   if (!school) return <div className="min-h-screen flex items-center justify-center"><p className="text-slate-400">Cargando...</p></div>
@@ -35,7 +36,7 @@ export default function TemasPage() {
     <>
       <Head><title>Temas – {school.name}</title></Head>
       <div className="min-h-screen bg-slate-50">
-        <Header backHref={'/escuela/' + query.id} />
+        <Header backHref={'/escuela/' + resolvedId} />
         <main className="max-w-lg mx-auto px-4 pb-10">
           <div className="pt-6 mb-5">
             <h1 className="text-xl font-black text-slate-900 mb-1">Prepárate por temas</h1>
@@ -50,7 +51,7 @@ export default function TemasPage() {
                   const c = COLORS[t.color] || COLORS.blue
                   const prog = MOCK_PROGRESS[t.id] || 0
                   return (
-                    <Link key={t.id} href={'/escuela/' + query.id + '/tema/' + t.id}>
+                    <Link key={t.id} href={'/escuela/' + resolvedId + '/tema/' + t.id}>
                       <div className={`card-hover press bg-white rounded-2xl border ${c.border} shadow-sm p-4 flex items-center gap-3 cursor-pointer anim-up`} style={{ animationDelay: (gi * 4 + ti) * 0.06 + 's', opacity: 0, animationFillMode: 'forwards' }}>
                         <div className={`w-12 h-12 ${c.bg} rounded-2xl flex items-center justify-center text-2xl flex-shrink-0`}>{t.emoji}</div>
                         <div className="flex-1 min-w-0">

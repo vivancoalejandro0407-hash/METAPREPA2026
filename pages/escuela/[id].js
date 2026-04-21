@@ -5,17 +5,18 @@ import Header from '../../components/Header'
 import { getSchool } from '../../data/schools'
 import { getTopics } from '../../data/topics'
 
-export default function EscuelaPage() {
-  const { query } = useRouter()
-  const school = query.id ? getSchool(query.id) : null
+export default function EscuelaPage({ id }) {
+  const router = useRouter()
+  const resolvedId = id || router.query.id
+  const school = resolvedId ? getSchool(resolvedId) : null
   const topics = school ? getTopics(school.exam) : []
 
   if (!school) return <div className="min-h-screen flex items-center justify-center"><p className="text-slate-400">Cargando...</p></div>
 
   const actions = [
-    { href: '/escuela/' + query.id + '/simulador', icon: '🧪', title: 'Hacer simulacro', desc: 'Examen con tiempo y puntaje', tag: topics.length + ' temas', grad: 'linear-gradient(135deg,#3b82f6,#1d4ed8)' },
-    { href: '/escuela/' + query.id + '/temas',     icon: '🧠', title: 'Prepararte por temas', desc: 'Explicaciones + tutor virtual', tag: 'Recomendado', grad: 'linear-gradient(135deg,#22c55e,#15803d)' },
-    { href: '/escuela/' + query.id + '/temario',   icon: '📚', title: 'Ver el temario', desc: 'Todo lo que entra al examen', tag: school.exam, grad: 'linear-gradient(135deg,#f97316,#c2410c)' },
+    { href: '/escuela/' + resolvedId + '/simulador', icon: '🧪', title: 'Hacer simulacro', desc: 'Examen con tiempo y puntaje', tag: topics.length + ' temas', grad: 'linear-gradient(135deg,#3b82f6,#1d4ed8)' },
+    { href: '/escuela/' + resolvedId + '/temas',     icon: '🧠', title: 'Prepararte por temas', desc: 'Explicaciones + tutor virtual', tag: 'Recomendado', grad: 'linear-gradient(135deg,#22c55e,#15803d)' },
+    { href: '/escuela/' + resolvedId + '/temario',   icon: '📚', title: 'Ver el temario', desc: 'Todo lo que entra al examen', tag: school.exam, grad: 'linear-gradient(135deg,#f97316,#c2410c)' },
   ]
 
   return (
@@ -50,7 +51,7 @@ export default function EscuelaPage() {
             <div className="h-2 rounded-full mb-3" style={{ background: 'rgba(255,255,255,.1)' }}>
               <div className="h-full progress-fill" style={{ width: '32%' }} />
             </div>
-            <Link href={'/escuela/' + query.id + '/temas'}>
+            <Link href={'/escuela/' + resolvedId + '/temas'}>
               <button className="w-full py-2.5 rounded-xl text-sm font-bold press" style={{ background: 'rgba(255,255,255,.1)' }}>
                 Continuar donde me quedé →
               </button>
