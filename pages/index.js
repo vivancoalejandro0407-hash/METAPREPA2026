@@ -44,13 +44,33 @@ export default function Home() {
 
           {/* Stats */}
           <section className="grid grid-cols-3 gap-3 mb-6">
-            {[['🏫','6+','Escuelas'],['❓','100+','Preguntas'],['🎁','100%','Gratis']].map(([icon,val,lbl]) => (
+            {[['🏫','5','Escuelas'],['❓','100+','Preguntas'],['🎁','100%','Gratis']].map(([icon,val,lbl]) => (
               <div key={lbl} className="bg-white rounded-2xl p-3 text-center border border-slate-100 shadow-sm">
                 <div className="text-xl mb-1">{icon}</div>
                 <p className="font-black text-slate-900 text-lg leading-none">{val}</p>
                 <p className="text-slate-500 text-xs mt-0.5">{lbl}</p>
               </div>
             ))}
+          </section>
+
+          {/* Onboarding */}
+          <section className="mb-6">
+            <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4">
+              <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">¿Cómo funciona?</p>
+              <div className="flex items-start gap-3">
+                {[
+                  { icon: '🏫', label: 'Elige tu prepa', desc: 'Selecciona la escuela a la que quieres entrar' },
+                  { icon: '📖', label: 'Estudia el tema', desc: 'Lee la explicación y ve los videos' },
+                  { icon: '✏️', label: 'Practica', desc: 'Haz ejercicios y pregúntale al Tutor IA' },
+                ].map((s) => (
+                  <div key={s.label} className="flex-1 flex flex-col items-center text-center gap-1.5">
+                    <div className="w-9 h-9 rounded-xl flex items-center justify-center text-xl" style={{ background: 'linear-gradient(135deg,#f0fdf4,#eff6ff)', border: '1.5px solid #e2e8f0' }}>{s.icon}</div>
+                    <p className="text-xs font-black text-slate-800 leading-tight">{s.label}</p>
+                    <p className="text-xs text-slate-400 leading-tight">{s.desc}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
           </section>
 
           {/* Schools */}
