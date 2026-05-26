@@ -88,7 +88,6 @@ export function getStaticPaths() {
       { params: { id: 'udg' } },
       { params: { id: 'cecytej' } },
       { params: { id: 'cobaej' } },
-      { params: { id: 'cecyte-emsad' } },
       { params: { id: 'ceti' } },
       { params: { id: 'tecmilenio' } },
     ],
