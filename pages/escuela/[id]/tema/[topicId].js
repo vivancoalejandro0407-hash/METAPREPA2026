@@ -1,10 +1,10 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState } from 'react'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 import Header from '../../../../components/Header'
 import { getSchool } from '../../../../data/schools'
 import { getTopic } from '../../../../data/topics'
-
+ 
 function Block({ b, i }) {
   if (b.type === 'h2') return <h2 key={i} className="text-lg font-black text-slate-900 mt-5 mb-2 first:mt-0">{b.text}</h2>
   if (b.type === 'h3') return <h3 key={i} className="text-sm font-bold text-slate-800 mt-4 mb-1.5 uppercase tracking-wide">{b.text}</h3>
@@ -18,14 +18,14 @@ function Block({ b, i }) {
   )
   return null
 }
-
+ 
 function PracticeSection({ practice }) {
   const [idx, setIdx] = useState(0)
   const [selected, setSelected] = useState(null)
   const [shown, setShown] = useState(false)
   const [score, setScore] = useState(0)
   const [done, setDone] = useState(false)
-
+ 
   if (!practice || practice.length === 0) return null
   if (done) return (
     <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5 text-center">
@@ -38,22 +38,22 @@ function PracticeSection({ practice }) {
       </button>
     </div>
   )
-
+ 
   const q = practice[idx]
   const letters = ['A', 'B', 'C', 'D']
-
+ 
   function pick(i) {
     if (shown) return
     setSelected(i)
     setShown(true)
     if (i === q.ans) setScore((s) => s + 1)
   }
-
+ 
   function next() {
     if (idx + 1 >= practice.length) { setDone(true); return }
     setIdx((n) => n + 1); setSelected(null); setShown(false)
   }
-
+ 
   return (
     <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
       <div className="px-4 py-3 border-b border-slate-100 flex items-center justify-between" style={{ background: '#f8fafc' }}>
@@ -96,42 +96,20 @@ function PracticeSection({ practice }) {
     </div>
   )
 }
-
-const TABS = ['📖 Explicación', '✏️ Práctica', '👨‍🏫 Tutor', '🎥 Videos']
-
+ 
+const TABS = ['📖 Explicación', '✏️ Práctica', '🎥 Videos']
+ 
 export default function TemaPage({ id, topicId }) {
   const router = useRouter()
   const resolvedId = id || router.query.id
   const resolvedTopicId = topicId || router.query.topicId
   const school = resolvedId ? getSchool(resolvedId) : null
   const topic  = (school && resolvedTopicId) ? getTopic(school.exam, resolvedTopicId) : null
-
-  const [tab, setTab]       = useState(0)
-  const [msgs, setMsgs]     = useState([])
-  const [input, setInput]   = useState('')
-  const [typing, setTyping] = useState(false)
-  const [chatIdx, setChatIdx] = useState(1)
-  const bottomRef = useRef(null)
-
-  useEffect(() => {
-    if (topic && msgs.length === 0) setMsgs([{ role: 'bot', text: topic.chat[0] }])
-  }, [topic])
-
-  useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: 'smooth' }) }, [msgs, typing])
-
+ 
+  const [tab, setTab] = useState(0)
+ 
   if (!school || !topic) return <div className="min-h-screen flex items-center justify-center"><p className="text-slate-400">Cargando...</p></div>
-
-  function sendMsg() {
-    const txt = input.trim(); if (!txt) return
-    setMsgs((p) => [...p, { role: 'user', text: txt }])
-    setInput(''); setTyping(true)
-    setTimeout(() => {
-      const reply = topic.chat[chatIdx % topic.chat.length] || '¡Muy bien! La constancia es la clave. 💪'
-      setMsgs((p) => [...p, { role: 'bot', text: reply }])
-      setChatIdx((n) => n + 1); setTyping(false)
-    }, 1100)
-  }
-
+ 
   return (
     <>
       <Head><title>{topic.title} – MetaPrepa</title></Head>
@@ -152,68 +130,22 @@ export default function TemaPage({ id, topicId }) {
             ))}
           </div>
         </div>
-
+ 
         <div className="flex-1 max-w-lg mx-auto w-full px-4 pb-8">
-
+ 
           {tab === 0 && (
             <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
               {(topic.content || []).map((b, i) => <Block key={i} b={b} i={i} />)}
               <div className="mt-5 pt-4 border-t border-slate-100 flex gap-3">
                 <button onClick={() => setTab(1)} className="flex-1 py-3 rounded-2xl text-white text-sm font-bold press" style={{ background: 'linear-gradient(135deg,#22c55e,#15803d)' }}>✏️ Practicar</button>
-                <button onClick={() => setTab(2)} className="flex-1 py-3 rounded-2xl bg-slate-100 text-slate-700 text-sm font-bold press">👨‍🏫 Tutor</button>
+                <button onClick={() => setTab(2)} className="flex-1 py-3 rounded-2xl bg-slate-100 text-slate-700 text-sm font-bold press">🎥 Videos</button>
               </div>
             </div>
           )}
-
+ 
           {tab === 1 && <PracticeSection practice={topic.practice} />}
-
+ 
           {tab === 2 && (
-            <div className="flex flex-col" style={{ height: '62vh' }}>
-              <div className="bg-white rounded-2xl border border-slate-100 shadow-sm flex flex-col overflow-hidden h-full">
-                <div className="px-4 py-3 flex items-center gap-3 flex-shrink-0" style={{ background: 'linear-gradient(135deg,#0f172a,#1e293b)' }}>
-                  <div className="w-9 h-9 rounded-xl flex items-center justify-center text-xl" style={{ background: 'linear-gradient(135deg,#4ade80,#60a5fa)' }}>🤖</div>
-                  <div>
-                    <p className="font-bold text-white text-sm">Tutor MetaPrepa</p>
-                    <p className="text-xs" style={{ color: '#94a3b8' }}>● En línea</p>
-                  </div>
-                </div>
-                <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-slate-50">
-                  {msgs.map((m, i) => (
-                    <div key={i} className={`flex items-end gap-2 ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                      {m.role === 'bot' && <div className="w-7 h-7 rounded-full flex items-center justify-center text-xs flex-shrink-0" style={{ background: 'linear-gradient(135deg,#4ade80,#60a5fa)' }}>🤖</div>}
-                      <div className={`max-w-xs px-4 py-2.5 text-sm leading-relaxed ${m.role === 'user' ? 'bubble-user' : 'bubble-bot'}`}>{m.text}</div>
-                    </div>
-                  ))}
-                  {typing && (
-                    <div className="flex items-end gap-2">
-                      <div className="w-7 h-7 rounded-full flex items-center justify-center text-xs" style={{ background: 'linear-gradient(135deg,#4ade80,#60a5fa)' }}>🤖</div>
-                      <div className="bubble-bot px-4 py-3 flex gap-1">
-                        {[0,1,2].map((d) => <span key={d} className="w-2 h-2 bg-slate-400 rounded-full block" style={{ animation: 'typing 0.6s ' + (d * 0.2) + 's infinite' }} />)}
-                      </div>
-                    </div>
-                  )}
-                  <div ref={bottomRef} />
-                </div>
-                <div className="bg-white border-t border-slate-100 p-3 flex-shrink-0">
-                  <div className="flex gap-2">
-                    <input className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="Escribe tu pregunta..." value={input}
-                      onChange={(e) => setInput(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && sendMsg()} />
-                    <button onClick={sendMsg} className="w-11 h-11 rounded-xl text-white flex items-center justify-center press flex-shrink-0" style={{ background: 'linear-gradient(135deg,#3b82f6,#2563eb)' }}>
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-                    </button>
-                  </div>
-                  <div className="flex gap-2 mt-2 flex-wrap">
-                    {['Explícame más fácil', 'Dame un ejemplo', '¿Qué entra al examen?'].map((q) => (
-                      <button key={q} onClick={() => setInput(q)} className="text-xs bg-slate-100 text-slate-600 px-2.5 py-1.5 rounded-xl font-medium press hover:bg-blue-50 hover:text-blue-700 transition-colors">{q}</button>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {tab === 3 && (
             <div>
               {(!topic.videos || topic.videos.length === 0) ? (
                 <div className="bg-white rounded-2xl border border-slate-100 p-8 text-center">
@@ -263,11 +195,15 @@ export default function TemaPage({ id, topicId }) {
     </>
   )
 }
-
+ 
 export function getStaticPaths() {
   return {
     paths: [
-    { params: { id: 'udg', topicId: 'algebra' } },    { params: { id: 'udg', topicId: 'geometria' } },    { params: { id: 'udg', topicId: 'estadistica' } },    { params: { id: 'udg', topicId: 'porcentajes' } },    { params: { id: 'udg', topicId: 'lectura' } },    { params: { id: 'udg', topicId: 'redaccion' } },    { params: { id: 'udg', topicId: 'razonamiento' } },    { params: { id: 'udg', topicId: 'comprension-exani' } },    { params: { id: 'udg', topicId: 'redaccion-exani' } },    { params: { id: 'udg', topicId: 'matematico-exani' } },    { params: { id: 'udg', topicId: 'cientifico-exani' } },    { params: { id: 'udg', topicId: 'materia' } },    { params: { id: 'udg', topicId: 'tabla-periodica' } },    { params: { id: 'udg', topicId: 'energia-fuerzas' } },    { params: { id: 'udg', topicId: 'medio-ambiente' } },    { params: { id: 'udg', topicId: 'autocuidado' } },    { params: { id: 'udg', topicId: 'algebra-cecyte' } },    { params: { id: 'udg', topicId: 'estadistica-cecyte' } },    { params: { id: 'udg', topicId: 'geometria-cecyte' } },    { params: { id: 'udg', topicId: 'derechos-sociedad' } },    { params: { id: 'udg', topicId: 'historia-mexico' } },    { params: { id: 'udg', topicId: 'lenguaje-fuentes' } },    { params: { id: 'udg', topicId: 'redaccion-cecyte' } },    { params: { id: 'cecytej', topicId: 'algebra' } },    { params: { id: 'cecytej', topicId: 'geometria' } },    { params: { id: 'cecytej', topicId: 'estadistica' } },    { params: { id: 'cecytej', topicId: 'porcentajes' } },    { params: { id: 'cecytej', topicId: 'lectura' } },    { params: { id: 'cecytej', topicId: 'redaccion' } },    { params: { id: 'cecytej', topicId: 'razonamiento' } },    { params: { id: 'cecytej', topicId: 'comprension-exani' } },    { params: { id: 'cecytej', topicId: 'redaccion-exani' } },    { params: { id: 'cecytej', topicId: 'matematico-exani' } },    { params: { id: 'cecytej', topicId: 'cientifico-exani' } },    { params: { id: 'cecytej', topicId: 'materia' } },    { params: { id: 'cecytej', topicId: 'tabla-periodica' } },    { params: { id: 'cecytej', topicId: 'energia-fuerzas' } },    { params: { id: 'cecytej', topicId: 'medio-ambiente' } },    { params: { id: 'cecytej', topicId: 'autocuidado' } },    { params: { id: 'cecytej', topicId: 'algebra-cecyte' } },    { params: { id: 'cecytej', topicId: 'estadistica-cecyte' } },    { params: { id: 'cecytej', topicId: 'geometria-cecyte' } },    { params: { id: 'cecytej', topicId: 'derechos-sociedad' } },    { params: { id: 'cecytej', topicId: 'historia-mexico' } },    { params: { id: 'cecytej', topicId: 'lenguaje-fuentes' } },    { params: { id: 'cecytej', topicId: 'redaccion-cecyte' } },    { params: { id: 'cobaej', topicId: 'algebra' } },    { params: { id: 'cobaej', topicId: 'geometria' } },    { params: { id: 'cobaej', topicId: 'estadistica' } },    { params: { id: 'cobaej', topicId: 'porcentajes' } },    { params: { id: 'cobaej', topicId: 'lectura' } },    { params: { id: 'cobaej', topicId: 'redaccion' } },    { params: { id: 'cobaej', topicId: 'razonamiento' } },    { params: { id: 'cobaej', topicId: 'comprension-exani' } },    { params: { id: 'cobaej', topicId: 'redaccion-exani' } },    { params: { id: 'cobaej', topicId: 'matematico-exani' } },    { params: { id: 'cobaej', topicId: 'cientifico-exani' } },    { params: { id: 'cobaej', topicId: 'materia' } },    { params: { id: 'cobaej', topicId: 'tabla-periodica' } },    { params: { id: 'cobaej', topicId: 'energia-fuerzas' } },    { params: { id: 'cobaej', topicId: 'medio-ambiente' } },    { params: { id: 'cobaej', topicId: 'autocuidado' } },    { params: { id: 'cobaej', topicId: 'algebra-cecyte' } },    { params: { id: 'cobaej', topicId: 'estadistica-cecyte' } },    { params: { id: 'cobaej', topicId: 'geometria-cecyte' } },    { params: { id: 'cobaej', topicId: 'derechos-sociedad' } },    { params: { id: 'cobaej', topicId: 'historia-mexico' } },    { params: { id: 'cobaej', topicId: 'lenguaje-fuentes' } },    { params: { id: 'cobaej', topicId: 'redaccion-cecyte' } },    { params: { id: 'ceti', topicId: 'algebra' } },    { params: { id: 'ceti', topicId: 'geometria' } },    { params: { id: 'ceti', topicId: 'estadistica' } },    { params: { id: 'ceti', topicId: 'porcentajes' } },    { params: { id: 'ceti', topicId: 'lectura' } },    { params: { id: 'ceti', topicId: 'redaccion' } },    { params: { id: 'ceti', topicId: 'razonamiento' } },    { params: { id: 'ceti', topicId: 'comprension-exani' } },    { params: { id: 'ceti', topicId: 'redaccion-exani' } },    { params: { id: 'ceti', topicId: 'matematico-exani' } },    { params: { id: 'ceti', topicId: 'cientifico-exani' } },    { params: { id: 'ceti', topicId: 'materia' } },    { params: { id: 'ceti', topicId: 'tabla-periodica' } },    { params: { id: 'ceti', topicId: 'energia-fuerzas' } },    { params: { id: 'ceti', topicId: 'medio-ambiente' } },    { params: { id: 'ceti', topicId: 'autocuidado' } },    { params: { id: 'ceti', topicId: 'algebra-cecyte' } },    { params: { id: 'ceti', topicId: 'estadistica-cecyte' } },    { params: { id: 'ceti', topicId: 'geometria-cecyte' } },    { params: { id: 'ceti', topicId: 'derechos-sociedad' } },    { params: { id: 'ceti', topicId: 'historia-mexico' } },    { params: { id: 'ceti', topicId: 'lenguaje-fuentes' } },    { params: { id: 'ceti', topicId: 'redaccion-cecyte' } },    { params: { id: 'tecmilenio', topicId: 'algebra' } },    { params: { id: 'tecmilenio', topicId: 'geometria' } },    { params: { id: 'tecmilenio', topicId: 'estadistica' } },    { params: { id: 'tecmilenio', topicId: 'porcentajes' } },    { params: { id: 'tecmilenio', topicId: 'lectura' } },    { params: { id: 'tecmilenio', topicId: 'redaccion' } },    { params: { id: 'tecmilenio', topicId: 'razonamiento' } },    { params: { id: 'tecmilenio', topicId: 'comprension-exani' } },    { params: { id: 'tecmilenio', topicId: 'redaccion-exani' } },    { params: { id: 'tecmilenio', topicId: 'matematico-exani' } },    { params: { id: 'tecmilenio', topicId: 'cientifico-exani' } },    { params: { id: 'tecmilenio', topicId: 'materia' } },    { params: { id: 'tecmilenio', topicId: 'tabla-periodica' } },    { params: { id: 'tecmilenio', topicId: 'energia-fuerzas' } },    { params: { id: 'tecmilenio', topicId: 'medio-ambiente' } },    { params: { id: 'tecmilenio', topicId: 'autocuidado' } },    { params: { id: 'tecmilenio', topicId: 'algebra-cecyte' } },    { params: { id: 'tecmilenio', topicId: 'estadistica-cecyte' } },    { params: { id: 'tecmilenio', topicId: 'geometria-cecyte' } },    { params: { id: 'tecmilenio', topicId: 'derechos-sociedad' } },    { params: { id: 'tecmilenio', topicId: 'historia-mexico' } },    { params: { id: 'tecmilenio', topicId: 'lenguaje-fuentes' } },    { params: { id: 'tecmilenio', topicId: 'redaccion-cecyte' } },
+      { params: { id: 'udg', topicId: 'algebra' } },{ params: { id: 'udg', topicId: 'geometria' } },{ params: { id: 'udg', topicId: 'estadistica' } },{ params: { id: 'udg', topicId: 'porcentajes' } },{ params: { id: 'udg', topicId: 'lectura' } },{ params: { id: 'udg', topicId: 'redaccion' } },{ params: { id: 'udg', topicId: 'razonamiento' } },{ params: { id: 'udg', topicId: 'comprension-exani' } },{ params: { id: 'udg', topicId: 'redaccion-exani' } },{ params: { id: 'udg', topicId: 'matematico-exani' } },{ params: { id: 'udg', topicId: 'cientifico-exani' } },{ params: { id: 'udg', topicId: 'materia' } },{ params: { id: 'udg', topicId: 'tabla-periodica' } },{ params: { id: 'udg', topicId: 'energia-fuerzas' } },{ params: { id: 'udg', topicId: 'medio-ambiente' } },{ params: { id: 'udg', topicId: 'autocuidado' } },{ params: { id: 'udg', topicId: 'derechos-sociedad' } },{ params: { id: 'udg', topicId: 'historia-mexico' } },{ params: { id: 'udg', topicId: 'lenguaje-fuentes' } },{ params: { id: 'udg', topicId: 'redaccion-cecyte' } },
+      { params: { id: 'cecytej', topicId: 'algebra' } },{ params: { id: 'cecytej', topicId: 'geometria' } },{ params: { id: 'cecytej', topicId: 'estadistica' } },{ params: { id: 'cecytej', topicId: 'porcentajes' } },{ params: { id: 'cecytej', topicId: 'lectura' } },{ params: { id: 'cecytej', topicId: 'redaccion' } },{ params: { id: 'cecytej', topicId: 'razonamiento' } },{ params: { id: 'cecytej', topicId: 'comprension-exani' } },{ params: { id: 'cecytej', topicId: 'redaccion-exani' } },{ params: { id: 'cecytej', topicId: 'matematico-exani' } },{ params: { id: 'cecytej', topicId: 'cientifico-exani' } },{ params: { id: 'cecytej', topicId: 'materia' } },{ params: { id: 'cecytej', topicId: 'tabla-periodica' } },{ params: { id: 'cecytej', topicId: 'energia-fuerzas' } },{ params: { id: 'cecytej', topicId: 'medio-ambiente' } },{ params: { id: 'cecytej', topicId: 'autocuidado' } },{ params: { id: 'cecytej', topicId: 'derechos-sociedad' } },{ params: { id: 'cecytej', topicId: 'historia-mexico' } },{ params: { id: 'cecytej', topicId: 'lenguaje-fuentes' } },{ params: { id: 'cecytej', topicId: 'redaccion-cecyte' } },
+      { params: { id: 'cobaej', topicId: 'algebra' } },{ params: { id: 'cobaej', topicId: 'geometria' } },{ params: { id: 'cobaej', topicId: 'estadistica' } },{ params: { id: 'cobaej', topicId: 'porcentajes' } },{ params: { id: 'cobaej', topicId: 'lectura' } },{ params: { id: 'cobaej', topicId: 'redaccion' } },{ params: { id: 'cobaej', topicId: 'razonamiento' } },{ params: { id: 'cobaej', topicId: 'comprension-exani' } },{ params: { id: 'cobaej', topicId: 'redaccion-exani' } },{ params: { id: 'cobaej', topicId: 'matematico-exani' } },{ params: { id: 'cobaej', topicId: 'cientifico-exani' } },{ params: { id: 'cobaej', topicId: 'materia' } },{ params: { id: 'cobaej', topicId: 'tabla-periodica' } },{ params: { id: 'cobaej', topicId: 'energia-fuerzas' } },{ params: { id: 'cobaej', topicId: 'medio-ambiente' } },{ params: { id: 'cobaej', topicId: 'autocuidado' } },{ params: { id: 'cobaej', topicId: 'derechos-sociedad' } },{ params: { id: 'cobaej', topicId: 'historia-mexico' } },{ params: { id: 'cobaej', topicId: 'lenguaje-fuentes' } },{ params: { id: 'cobaej', topicId: 'redaccion-cecyte' } },
+      { params: { id: 'ceti', topicId: 'algebra' } },{ params: { id: 'ceti', topicId: 'geometria' } },{ params: { id: 'ceti', topicId: 'estadistica' } },{ params: { id: 'ceti', topicId: 'porcentajes' } },{ params: { id: 'ceti', topicId: 'lectura' } },{ params: { id: 'ceti', topicId: 'redaccion' } },{ params: { id: 'ceti', topicId: 'razonamiento' } },{ params: { id: 'ceti', topicId: 'comprension-exani' } },{ params: { id: 'ceti', topicId: 'redaccion-exani' } },{ params: { id: 'ceti', topicId: 'matematico-exani' } },{ params: { id: 'ceti', topicId: 'cientifico-exani' } },{ params: { id: 'ceti', topicId: 'materia' } },{ params: { id: 'ceti', topicId: 'tabla-periodica' } },{ params: { id: 'ceti', topicId: 'energia-fuerzas' } },{ params: { id: 'ceti', topicId: 'medio-ambiente' } },{ params: { id: 'ceti', topicId: 'autocuidado' } },{ params: { id: 'ceti', topicId: 'derechos-sociedad' } },{ params: { id: 'ceti', topicId: 'historia-mexico' } },{ params: { id: 'ceti', topicId: 'lenguaje-fuentes' } },{ params: { id: 'ceti', topicId: 'redaccion-cecyte' } },
+      { params: { id: 'tecmilenio', topicId: 'algebra' } },{ params: { id: 'tecmilenio', topicId: 'geometria' } },{ params: { id: 'tecmilenio', topicId: 'estadistica' } },{ params: { id: 'tecmilenio', topicId: 'porcentajes' } },{ params: { id: 'tecmilenio', topicId: 'lectura' } },{ params: { id: 'tecmilenio', topicId: 'redaccion' } },{ params: { id: 'tecmilenio', topicId: 'razonamiento' } },{ params: { id: 'tecmilenio', topicId: 'comprension-exani' } },{ params: { id: 'tecmilenio', topicId: 'redaccion-exani' } },{ params: { id: 'tecmilenio', topicId: 'matematico-exani' } },{ params: { id: 'tecmilenio', topicId: 'cientifico-exani' } },{ params: { id: 'tecmilenio', topicId: 'materia' } },{ params: { id: 'tecmilenio', topicId: 'tabla-periodica' } },{ params: { id: 'tecmilenio', topicId: 'energia-fuerzas' } },{ params: { id: 'tecmilenio', topicId: 'medio-ambiente' } },{ params: { id: 'tecmilenio', topicId: 'autocuidado' } },{ params: { id: 'tecmilenio', topicId: 'derechos-sociedad' } },{ params: { id: 'tecmilenio', topicId: 'historia-mexico' } },{ params: { id: 'tecmilenio', topicId: 'lenguaje-fuentes' } },{ params: { id: 'tecmilenio', topicId: 'redaccion-cecyte' } },
     ],
     fallback: false
   }
