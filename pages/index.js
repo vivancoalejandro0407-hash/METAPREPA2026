@@ -61,7 +61,7 @@ export default function Home() {
                 {[
                   { icon: '🏫', label: 'Elige tu prepa', desc: 'Selecciona la escuela a la que quieres entrar' },
                   { icon: '📖', label: 'Estudia el tema', desc: 'Lee la explicación y ve los videos' },
-                  { icon: '✏️', label: 'Practica', desc: 'Haz ejercicios y pregúntale al Tutor IA' },
+                  { icon: '✏️', label: 'Practica', desc: 'Haz ejercicios y refuerza lo aprendido' },
                 ].map((s) => (
                   <div key={s.label} className="flex-1 flex flex-col items-center text-center gap-1.5">
                     <div className="w-9 h-9 rounded-xl flex items-center justify-center text-xl" style={{ background: 'linear-gradient(135deg,#f0fdf4,#eff6ff)', border: '1.5px solid #e2e8f0' }}>{s.icon}</div>
