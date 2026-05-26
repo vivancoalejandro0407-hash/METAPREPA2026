@@ -52,4 +52,9 @@ export const QUESTIONS = {
   ],
 }
 
-export function getQuestions(exam) { return QUESTIONS[exam] || [] }
+export function getQuestions(exam) {
+  if (exam === 'Examen CECyTEJ') {
+    return [...(QUESTIONS['PIENSE II'] || []), ...(QUESTIONS['CECyTE-EMSaD'] || [])]
+  }
+  return QUESTIONS[exam] || []
+}

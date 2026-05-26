@@ -12,7 +12,7 @@ export const SCHOOLS = [
   {
     id: 'cecytej',
     name: 'CECyTEJ',
-    exam: 'PIENSE II',
+    exam: 'Examen CECyTEJ',
     icon: '🔬',
     gradient: 'from-green-500 to-green-700',
     badge: 'bg-green-100 text-green-800',
@@ -29,16 +29,7 @@ export const SCHOOLS = [
     desc: 'Colegio de Bachilleres del Estado de Jalisco',
     places: '~6,000 lugares',
   },
-  {
-    id: 'cecyte-emsad',
-    name: 'CECyTE-EMSaD',
-    exam: 'CECyTE-EMSaD',
-    icon: '🏫',
-    gradient: 'from-emerald-500 to-teal-700',
-    badge: 'bg-emerald-100 text-emerald-800',
-    desc: 'Guía Oficial Examen de Admisión 2026',
-    places: '~5,000 lugares',
-  },
+
   {
     id: 'ceti',
     name: 'CETI Colomos',

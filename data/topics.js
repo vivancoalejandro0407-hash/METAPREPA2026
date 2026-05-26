@@ -490,10 +490,14 @@ const CECYTE = [
   },
 ]
 
+// Temas exclusivos de CECyTE que no se repiten en PIENSE
+const CECYTE_EXCLUSIVOS = CECYTE.filter(t => !['algebra-cecyte','estadistica-cecyte','geometria-cecyte'].includes(t.id))
+
 export const TOPICS_BY_EXAM = {
   'PIENSE II': PIENSE,
   'EXANI-I': EXANI,
   'CECyTE-EMSaD': CECYTE,
+  'Examen CECyTEJ': [...PIENSE, ...CECYTE_EXCLUSIVOS],
 }
 
 export function getTopics(exam) { return TOPICS_BY_EXAM[exam] || [] }
